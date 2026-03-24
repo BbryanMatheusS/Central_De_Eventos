@@ -1,0 +1,12 @@
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+.idea/
+.vscode/
+*.iml
+*.log
+
+# Bloqueio padrão de JS
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+*.env
