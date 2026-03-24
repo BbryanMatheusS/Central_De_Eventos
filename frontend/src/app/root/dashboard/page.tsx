@@ -35,7 +35,7 @@ export default function RootDashboard() {
 
   return (
     <div style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontWeight: '800', margin: 0, fontSize: '2rem', color: '#f85149' }}>Terminal de Comando (ROOT)</h1>
           <p style={{ margin: 0, color: 'var(--text-muted)' }}>Visão de supervisão irrestrita. Eventos de todas as empresas integradas.</p>
@@ -48,7 +48,8 @@ export default function RootDashboard() {
         {events.length === 0 ? (
            <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>O banco de dados não encontrou movimentação de eventos até o milissegundo atual.</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
             <thead>
               <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ padding: '1rem' }}>Registro ID</th>
@@ -72,6 +73,7 @@ export default function RootDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

@@ -176,6 +176,20 @@ public class EventController {
         return ResponseEntity.ok(Map.of("message", "Cachê atualizado!"));
     }
 
+    @PutMapping("/participation/{participationId}/offer")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<?> offerPayment(@PathVariable Long participationId, @RequestBody EventParticipationRequest request) {
+        CustomUserDetails user = getAuthenticatedUser();
+        EventParticipation participation = eventParticipationRepository.findById(participationId).orElse(null);
+        if (participation == null || !participation.getEvent().getCompany().getId().equals(user.getUser().getCompany().getId())) {
+            return ResponseEntity.status(403).body(Map.of("message", "Acesso negado."));
+        }
+        participation.setPaymentAmount(request.getPaymentAmount());
+        participation.setStatus("PENDING");
+        eventParticipationRepository.save(participation);
+        return ResponseEntity.ok(Map.of("message", "Cachê oferecido ao freelancer!"));
+    }
+
     @GetMapping("/{eventId}/export-csv")
     @PreAuthorize("hasAnyRole('OWNER', 'ROOT')")
     public void exportCsv(@PathVariable Long eventId, HttpServletResponse response) throws Exception {

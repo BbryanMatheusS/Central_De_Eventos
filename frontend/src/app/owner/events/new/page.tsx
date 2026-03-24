@@ -32,7 +32,7 @@ export default function NewEvent() {
 
   return (
     <div style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h1 style={{ fontWeight: '800', margin: 0, fontSize: '2rem', color: '#fff' }}>Organizar Novo Evento</h1>
         <button onClick={() => router.push('/owner/dashboard')} className="btn-primary" style={{ width: 'auto', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>← Cancela e Voltar</button>
       </header>
@@ -51,7 +51,7 @@ export default function NewEvent() {
             <label className="input-label">Endereçamento Tático (Localização)</label>
             <input type="text" required className="input-field" placeholder="Setor 4 - São Paulo" onChange={e => setFormData({...formData, location: e.target.value})} />
           </div>
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             <div className="input-group" style={{ flex: 1 }}>
               <label className="input-label">Data de Ativação</label>
               <input type="date" required className="input-field" onChange={e => setFormData({...formData, eventDate: e.target.value})} />

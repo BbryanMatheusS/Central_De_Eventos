@@ -36,7 +36,7 @@ export default function OwnerDashboard() {
   return (
     <div style={{ paddingTop: '2rem', paddingBottom: '4rem', minHeight: '100vh' }}>
       
-      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontWeight: '800', margin: 0, fontSize: '2rem', color: '#fff' }}>Gestão de Eventos</h1>
           <p style={{ margin: 0, color: 'var(--text-muted)' }}>Bem-vindo ao painel blindado da sua empresa.</p>
@@ -46,7 +46,7 @@ export default function OwnerDashboard() {
         </button>
       </header>
 
-      <div className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h2 style={{ fontSize: '1.4rem' }}>Meus Eventos Criptografados</h2>
         <button className="btn-primary" style={{ width: 'auto', padding: '0.6rem 1.5rem' }} onClick={() => router.push('/owner/events/new')}>+ Novo Evento</button>
       </div>
@@ -57,7 +57,8 @@ export default function OwnerDashboard() {
             <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Sua empresa ainda não inaugurou nenhum evento maravilhoso.</p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ padding: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}>Evento</th>
@@ -84,6 +85,7 @@ export default function OwnerDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

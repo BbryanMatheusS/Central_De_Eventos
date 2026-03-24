@@ -25,6 +25,7 @@ public class FreelancerController {
 
     private final FreelancerRepository freelancerRepository;
     private final EventParticipationRepository eventParticipationRepository;
+    private final com.central.backend.repository.EventRepository eventRepository;
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('FREELANCER')")
@@ -114,5 +115,52 @@ public class FreelancerController {
         participation.setStatus(payload.get("status"));
         eventParticipationRepository.save(participation);
         return ResponseEntity.ok(Map.of("message", "Status atualizado!"));
+    }
+    @GetMapping("/events/available")
+    @PreAuthorize("hasRole('FREELANCER')")
+    public ResponseEntity<?> getAvailableEvents() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        var freelancer = freelancerRepository.findByUserId(userDetails.getUser().getId()).orElseThrow();
+        
+        List<com.central.backend.entity.Event> allEvents = eventRepository.findAll();
+        List<Long> myEventIds = eventParticipationRepository.findAll().stream()
+                .filter(p -> p.getFreelancer().getId().equals(freelancer.getId()))
+                .map(p -> p.getEvent().getId())
+                .collect(Collectors.toList());
+                
+        List<Map<String, Object>> available = allEvents.stream()
+                .filter(e -> !myEventIds.contains(e.getId()))
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("eventId", e.getId());
+                    map.put("name", e.getName());
+                    map.put("location", e.getLocation());
+                    map.put("eventDate", e.getEventDate().toString());
+                    map.put("eventTime", e.getEventTime().toString());
+                    map.put("companyName", e.getCompany().getName());
+                    return map;
+                }).collect(Collectors.toList());
+                
+        return ResponseEntity.ok(available);
+    }
+
+    @PostMapping("/events/{eventId}/apply")
+    @PreAuthorize("hasRole('FREELANCER')")
+    public ResponseEntity<?> applyToEvent(@PathVariable Long eventId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        var freelancer = freelancerRepository.findByUserId(userDetails.getUser().getId()).orElseThrow();
+        var event = eventRepository.findById(eventId).orElseThrow();
+        
+        EventParticipation participation = new EventParticipation();
+        participation.setEvent(event);
+        participation.setFreelancer(freelancer);
+        participation.setPaymentAmount(java.math.BigDecimal.ZERO);
+        participation.setAttended(false);
+        participation.setStatus("APPLIED");
+        
+        eventParticipationRepository.save(participation);
+        return ResponseEntity.ok(Map.of("message", "Candidatura enviada com sucesso!"));
     }
 }

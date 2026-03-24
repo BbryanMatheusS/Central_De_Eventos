@@ -75,7 +75,7 @@ export default function FreelancerDashboard() {
 
   return (
     <div style={{ paddingTop: '2rem', paddingBottom: '4rem', minHeight: '100vh' }}>
-      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontWeight: '800', margin: 0, fontSize: '2rem', color: '#fff' }}>Central do Freelancer</h1>
           <p style={{ margin: 0, color: 'var(--text-muted)' }}>Gerencie suas informações de contratação e Pagamentos Pix.</p>
@@ -122,7 +122,8 @@ export default function FreelancerDashboard() {
       <div className="glass-card animate-fade-in" style={{ marginTop: '2.5rem' }}>
         <h2 style={{ marginBottom: '1.5rem', fontSize: '1.4rem' }}>Minhas Escalas Formais (Eventos)</h2>
         {events.length === 0 ? <p style={{color:'var(--text-muted)'}}>Nenhum contratante acionou as suas operações ainda.</p> : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100%' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
                   <th style={{ padding: '1rem' }}>Sinal (Evento / Local)</th>
@@ -139,7 +140,7 @@ export default function FreelancerDashboard() {
                           <td style={{ padding: '1.5rem 1rem', color: '#2ea043', fontWeight: 'bold', fontSize: '1.1rem' }}>R$ {e.paymentAmount}</td>
                           <td style={{ padding: '1.5rem 1rem', textAlign: 'right' }}>
                               {e.status === 'PENDING' ? (
-                                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                                       <button onClick={() => answerInvite(e.participationId, 'DECLINED')} style={{ padding: '0.6rem 1.2rem', background: 'transparent', color: '#f85149', border: '1px solid currentColor', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Recusar Missão</button>
                                       <button onClick={() => answerInvite(e.participationId, 'CONFIRMED')} style={{ padding: '0.6rem 1.2rem', background: '#2ea043', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>CONFIRMAR PRESENÇA</button>
                                   </div>
@@ -151,6 +152,7 @@ export default function FreelancerDashboard() {
                   ))}
               </tbody>
             </table>
+            </div>
         )}
       </div>
 

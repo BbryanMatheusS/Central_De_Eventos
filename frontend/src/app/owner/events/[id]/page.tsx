@@ -17,6 +17,9 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
   const [editId, setEditId] = useState<number | null>(null);
   const [editAmount, setEditAmount] = useState<string>('');
 
+  const candidates = participants.filter(p => p.status === 'APPLIED');
+  const squad = participants.filter(p => p.status !== 'APPLIED');
+
   useEffect(() => {
     loadData();
   }, []);
@@ -69,6 +72,22 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
     }
   };
 
+  const offerPayment = async (participationId: number) => {
+    const valStr = prompt("Digite o cachê inicial oferecido para este candidato (ex: 200.00):");
+    if (!valStr || isNaN(Number(valStr))) return alert("Valor numérico inválido.");
+    
+    try {
+      await apiFetch(`/events/participation/${participationId}/offer`, {
+        method: 'PUT',
+        body: JSON.stringify({ paymentAmount: Number(valStr) })
+      });
+      setMsg({ erro: false, text: 'Cachê oferecido! O Freelancer precisará confirmar pelo próprio celular dele.' });
+      loadData();
+    } catch(err: any) {
+      alert("Erro ao aprovar e oferecer cache: " + err.message);
+    }
+  };
+
   const handleDelete = async (participationId: number) => {
     if (!confirm('DESMISSÃO: Você deseja remover definitivamente este Freelancer da base contratual deste evento?')) return;
     try {
@@ -83,7 +102,7 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
 
   return (
     <div style={{ paddingTop: '2rem', paddingBottom: '4rem', minHeight: '100vh' }}>
-      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+      <header className="animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontWeight: '800', margin: 0, fontSize: '2rem', color: '#fff' }}>Sala de Recrutamento (Evento #{id})</h1>
           <p style={{ color: 'var(--text-muted)', margin: 0 }}>Escale e defina o orçamento de quem vai trabalhar neste evento.</p>
@@ -94,7 +113,7 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
       <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
         
         {/* Painel Central de Seleção */}
-        <div className="glass-card animate-fade-in" style={{ flex: 1, minWidth: '350px', alignSelf: 'flex-start' }}>
+        <div className="glass-card animate-fade-in" style={{ flex: 1, minWidth: '100%', alignSelf: 'flex-start' }}>
           <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem' }}>Designar Colaborador (Convite)</h2>
           {msg.text && <p style={{ padding: '0.8rem', borderRadius: '4px', background: msg.erro ? 'rgba(248,81,73,0.1)' : 'rgba(46, 160, 67, 0.1)', color: msg.erro ? 'var(--error)' : '#2ea043', marginBottom: '1rem', fontWeight: 'bold' }}>{msg.erro ? 'X ' : '✓ '}{msg.text}</p>}
           
@@ -116,6 +135,36 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
           </form>
         </div>
 
+        {/* Candidaturas Pendentes */}
+        {candidates.length > 0 && (
+          <div className="glass-card animate-fade-in" style={{ flex: 2, minWidth: '100%', maxWidth: '100%' }}>
+            <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', color: '#58a6ff' }}>Auto-Indicações (Freelancers Interessados)</h2>
+            <div style={{ overflowX: 'auto', width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
+                    <th style={{ padding: '1rem' }}>Profissional Interessado</th>
+                    <th style={{ padding: '1rem' }}>Situação Temporal</th>
+                    <th style={{ padding: '1rem', textAlign: 'right' }}>Análise Corporativa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.map(p => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid rgba(48,54,61,0.5)' }}>
+                      <td style={{ padding: '1rem', color: '#fff', fontWeight: 'bold' }}>{p.freelancerName} <br/><small style={{color:'var(--text-muted)', fontWeight: 'normal'}}>Doc: {p.document}</small></td>
+                      <td style={{ padding: '1rem', color: '#d29922' }}>Aguardando Oferta do Contratante</td>
+                      <td style={{ padding: '1rem', textAlign: 'right' }}>
+                         <button onClick={() => offerPayment(p.id)} style={{ padding: '0.6rem 1.2rem', background: '#58a6ff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', marginRight: '0.5rem' }}>Aprovar Entrada (Ofertar Cachê)</button>
+                         <button onClick={() => handleDelete(p.id)} style={{ padding: '0.6rem 1.2rem', background: 'transparent', color: '#f85149', border: '1px solid currentColor', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Recusar Inscrição</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* Tabela do Esquadrão */}
         <div className="glass-card animate-fade-in" style={{ flex: 2, minWidth: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -128,8 +177,8 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
             </button>
           </div>
           
-          {participants.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)' }}>Você ainda não enviou nenhum convite para os operadores logísticos.</p>
+          {squad.length === 0 ? (
+            <p style={{ color: 'var(--text-muted)' }}>Nenhum operador fixado na Base Operacional Direta deste Setor.</p>
           ) : (
             <div style={{ overflowX: 'auto', width: '100%' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
@@ -143,7 +192,7 @@ export default function EventTeamManager({ params }: { params: Promise<{ id: str
                 </tr>
               </thead>
               <tbody>
-                {participants.map(p => (
+                {squad.map(p => (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(48,54,61,0.5)' }}>
                     <td style={{ padding: '1rem', color: '#fff', fontWeight: 'bold' }}>{p.freelancerName} <br/><small style={{color:'var(--text-muted)', fontWeight: 'normal'}}>Doc: {p.document}</small></td>
                     <td style={{ padding: '1rem', color: '#58a6ff' }}>{p.pixKey || 'Não cadastrado'}</td>
